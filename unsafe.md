@@ -68,7 +68,7 @@
 ```swift
     var a = -1
     withUnsafeMutablePointer(to: &a){
-                    var ptr = unsafeBitCast($0, to: UnsafePointer<UInt>.self)
+                    let ptr = unsafeBitCast($0, to: UnsafePointer<UInt>.self)
                     print(ptr.pointee)
                 }           
 ```
