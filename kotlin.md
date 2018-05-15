@@ -7,12 +7,13 @@
     13. Kotlin没有Scalar类型，一切皆是类，根类型为Any
     10. 与swift不同，类型判断具有上下文相关性
     6. 类型别名typealias State = Int
+    8. 语句变表达式：if，when和try
+    9. if, for, while的`{}`可省
 3. String
     1. String不可变
     2. "$name"/"${expr}"
     5. 与swift一致，"""abc"""
     6. 字符：'a'，不能和数字直接运算
-    8. 语句变表达式：if，when和try
 2. 位操作
     shl(bits) –>  <<
     shr(bits) –>  >>
@@ -77,7 +78,7 @@
         30. reversed
         30. sort = sorted = sortBy，sortDescending，sortDescendingBy
 5. when
-    1. when((x))?{...else}代替switch(x){...default}，else代替default。expr->{}，expr如果包含x，则expr是x的普通枚举，is或in表达式；否则，expr只要是bool表达式即可
+    1. when((x))?{...else}代替switch(x){...default}。expr->{}，expr如果包含x，则expr是x的普通枚举，is或in表达式；否则，expr只要是bool表达式即可
     2. when可变表达式
 3. cast
     1. is和!is判断类型，且对下文有效
@@ -100,21 +101,24 @@
     5. inline的实质是代码替换
     6. 符号化函数需要operator修饰
 4. lambda
-    1. 与swift相比，lambda和普通函数在形式上没有区别。
+    1. 与swift相比，形式上相同的是，lambda和普通函数在形式上没有区别。
     2. 与swift相比，缩写方式相同的是，作为最后参数时可以外置，作为唯一参数时可以去（）
     2. 与swift相比，缩写方式不同的是，只有一个参数时参数才可省略，默认名称为it
-    3. 与swift相比，作为inline函数的参数时，return默认返回至外层函数
+    3. 与swift相比，作为inline函数的参数时，return默认返回至外层函数，否则不能使用无label的return
+    4. 最后一个expr可以省略return
 5. 标签及跳转
     1. 标签格式：name@ expr|stmt，lambda的标签在{}前面
     2. 标签搭配break，continue，return使用，其中return@name (res)?，仅return可跨越ladmbda的范围
     3. 函数包括ladmbda的默认标签为函数名
 5. class
     1. 允许空类
-    2. 一主构造器，多次构造器
-    3. 主构造器紧跟类名，且没有权限修饰时constructor可省略
+    2. 一主构造器，包括默认主构造器，多次构造器
+    3. 主构造器紧跟类名，没有权限修饰时constructor可省略
     4. 主构造器不含代码，初始化可在init中进行
     4. 系统会提供一个默认的无参主构造器，人为提供的主或次构造器会让默认构造器失效
     4. 人为提供主构造器后，次构造器必须直接或间接调用主构造器，调用方式为constructor(...):this(...)
+    5. 与swift一样，子类如果没有主构造器，就必须在次构造器中调用super
+    6. 多继承用super<A>
     4. 可在主构造器参数前加val，var来声明成员变量
     4. 成员权限种类与类权限一样，默认为public
     4. getter权限要与成员变量相同，setter权限要与成员变量相同或更低
@@ -127,7 +131,7 @@
     5. override用来重载成员方法和变量，可出现在constructor中，可val->var，反之则不可
     11. 静态成员只能通过嵌套object类或者搭配companion类实现
     6. 抽象类和方法
-    7. 嵌套类不可访问外部类成员
+    7. 嵌套类内部不可访问外部类成员
     8. 内部类用inner修饰，可以直接访问外部类成员，可用this@className获取外部对象
     9. Any含有3个方法
         - equals()
@@ -161,23 +165,27 @@
         2. toString() //"User(name=John, age=42)"
         3. componentN() //functions
         4. copy()
+    - copy时可以修正copy(name = "frank")
     - 解构: val (name, age) = User(name = "", age = 2)
     - 标准数据类：Pair/Triple
 11. sealed class
-    - 有效的子类
+    - 有效的子类，可作为枚举使用
     - 不能修饰interface, abstract
+    - 密封类搭配when穷举时不需要else
 13. object
-    - 把类声明变成expr，可增加类成员和override，且所有成员均为静态类型
-    - object表达式可省略类型变匿名类
-    - 用object声明的类，所有成员均为静态类型
+    - 匿名类：object {}，单例：object A{}
+    - 匿名类可以当作对象表达式
+    - 匿名对象作为成员变量时，要想访问匿名对象的成员的话，修饰符限仅于private
+    - 嵌套单例内部不能访问外部成员，外部只能通过方法名访问内部成员
 14. companion
-    - companion用来给类增加静态成员，且一个类只能使用一次
-    - companion类可匿名，匿名时名称可用Companion，但无论是否匿名，外部类都可直接访问其成员
+    - 伴生类：ompanion object[ A]
+    - 可以用来增加静态成员，内部不能访问外部成员，且一个类只能使用一次
 8. extension
-    - 扩展是静态的
-    - 扩展函数优先级较低
-    - 扩展成员变量时field不可用
+    - 扩展是静态的，可以扩展变量和方法
+    - 扩展的成员优先级较低
+    - 扩展成员变量时field不可用，且不能初始化
     - 嵌套扩展时，可以直接访问外部类的成员，若有相同成员则以嵌套类优先
+    - 可以扩展companion
     - 扩展空对象Any?.fun()时可用this判断对象是否为空
     - 扩展一般放在顶级包下，导入扩展: import (foo.bar.goo|*)
     - 常用扩展方法：
@@ -189,8 +197,9 @@
 7. interface
     1. 相swift不同的是，interface中可以定义抽象成员变量，可以实现方法
 12. generic
+    - 泛型即类型参数化，可用于类，方法和接口
     - 泛型约束，默认的上界是 Any?
-    - 多个上界约束条件，可以用 where 子句：where T：Comparable, Cloneable
+    - 多个上界约束条件，要用where：where T: Comparable, T: Cloneable
     - in和out分别限制泛型用于成员变量和方法时的数据流向
     - *表示不关注其类型，主要用于从java转换过来的类型，如List<*>, Map<*, Int>
 15. by
@@ -243,4 +252,30 @@ lock & block
     println("Consumed, count is $items: ${Thread.currentThread()}")
     lock.notifyAll()
     }
+```
+
+```kotlin
+    lateinit var subject: TestSubject
+
+    @SetUp fun setup() {
+        subject = TestSubject()
+    }
+
+    @Test fun test() {
+        subject.method()  // dereference directly
+    }
+}
+```
+
+```kotlin
+    fun Any?.toString(): String {
+        if (this == null) return "null"
+        // 空检测之后，“this”会自动转换为非空类型，所以下面的 toString()
+        // 解析为 Any 类的成员函数
+        return toString()
+    }
+```
+
+```kotlin
+    object NotANumber : Expr()
 ```
