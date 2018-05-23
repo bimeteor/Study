@@ -93,12 +93,13 @@
                 |[String, String]
 2. fun
     1. 返回类型可省，public除外，但若返回类型是Unit，public类型也可省
-    2. 如果函数体只有一个expr，则可以 = expr
+    2. 如果函数体只有一个stmt，则可以 = stmt
     3. 可变参数前加vararg
     4. 参数可提供默认值
     5. 函数调用时可提供参数名
     4. 函数引用::name
     5. inline的实质是代码替换
+    6. inline中的泛型转换可以用reified去掉cast warning
     6. 符号化函数需要operator修饰
 4. lambda
     1. 与swift相比，形式上相同的是，lambda和普通函数在形式上没有区别。
