@@ -33,7 +33,7 @@
     1. 函数签名不包括函数名，实现的时候不会比较参数名
     1. 用new约束constructor时不能用类来implements，因为constructor属于静态方法，而约束只检查实例方法
     3. 成员变量类型可以是常量
-    3. 可为类增加成员索引，number索引会被转换成${number}再去索引，所以同时存在number和string索引时，number索引返回值要是string索引返回值的子类，同样其它属性也要是string索引返回类型的子类型
+    3. number索引会被转换成string再去索引，所以同时存在number和string索引时，number类型要是string的子类。其它成员类型要是string的子类
     5. 继承和转换其实就是成员的copy
     7. 接口继承类会去掉所有的实现，继承被继承类有非public成员，只能用原类的子类来实现该接口
     8. type aType = {} literal
