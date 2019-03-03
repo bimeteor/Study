@@ -1,5 +1,5 @@
 ### Outline
-1. 基础类型
+1. basic
     - string，boolean，number，Array，枚举，Any， Never，cast
     1. ``可跨行，替换格式为${}，支持tagged template
     2. tuple的形式与应用都和数组类似，只不过元素类型是已知元素类型的联合
@@ -8,7 +8,8 @@
     4. any不作属性和方法检查，Object会
     5. cast用<string>或as，只会改变读写属性
     6. 用{}手动创建对象时key:value中的key可以是string literal，可以省略为key，如果key不是name，需要放在[]里面
-2. 变量声明
+    7. literal检查更严格，不允许有多余成员
+2. variables
     - 解构，默认值，展开
     1. var，let，const
     1. =>会capture，即使用的是数值，而普通方法不会capture，即使用的是引用
@@ -19,7 +20,7 @@
     5. 后面元素会覆盖前面元素
     6. 展开对象会丢失方法
     7. destruct用于交换数值
-3. 集合
+3. collection
     7. ...可以用在参数列表和[]中，场景有把array转成可变参数，copy，合并，desctruct，以及string，Map，Set，Iterator，Generator转array
     8. Array.from把有length的对object转成array，替代方案[].slice.call(args)
     9. Array.of补充Array()，替代方案是[].slice.call(args)
@@ -27,7 +28,7 @@
     11. Map 和 Set 数据结构有一个has
     12. Set比较用的是===
     2. WeakSet元素只能是对象，而且不可遍历
-3. 接口
+3. interface
     - 可选属性，只读属性，权限类型，可约束函数和类
     - 因为TypeScript的类型检查用的是结构型检查，所以接口的实现和类的转换可以只做成员的匹配，不做显示的实现和继承
     1. 函数签名不包括函数名，实现的时候不会比较参数名
@@ -37,7 +38,7 @@
     5. 继承和转换其实就是成员的copy
     7. 接口继承类会去掉所有的实现，继承被继承类有非public成员，只能用原类的子类来实现该接口
     8. type aType = {} literal
-4. 类
+4. class
     - javascript使用函数和基于原型的继承来复用，而typescript使用基于类的继承来复用。因为类对象就是个构造器，所以定义类的时候生成了两个东西：实例的类型和静态方法constructor
     1. 默认权限为public
     3. 成员变量必须赋予编译常量表达式或在constructor初始化
@@ -48,24 +49,25 @@
     7. 抽象类可实现函数，抽象方法只存在于抽象类
     8. 类可以当接口使用
     9. Object的扩展方法
-5. 函数
+    10. 成员变量不带let等keyword，方法不带function
+5. function
     1. 支持默认，可选，可变参数。其中后两者要在最后，可选参数与末尾的默认参数共享函数签名
     2. 手动构造实例时，需要使用假参提供类型
     5. =>是匿名函数，是会捕获this的数值，但不会捕获this的类型。不适用于动态场景：类方法和回调
     6. overload需要一个兼容函数负责实现
     7. name(constructor为anonymous),length
-6. 范型
+6. generic
     1. 范型可描述函数，接口，类，构造函数，可以用接口约束
     1. 范型不能描述静态变量
     2. 约束类类型即constructor时用类型用{new():T}
-7. 枚举
+7. enum
     - 普通枚举，常量枚举，外部枚举
     1. 枚举数值可以是number和string，默认从0开始。
     2. const枚举成员必须是编译期常量表达式
     1. 普通枚举是一个类，编译时会生成值到名字的双向映射
     3. 外部枚举相当于extern，且不会被替换成常量
     5. 枚举会在逻辑运算时检查集合完整性
-9. 类型兼容
+9. compatibility
     - 赋值时发生兼容，分为类和函数兼容两种，因为类成员已初始化，所以类的兼容在成员包容上是退化的，因为函数参数需要初始化，所以函数的兼容在参数包容上是进化的。函数的兼容对顺序有要求
     1. 兼容性检查是递归的
     2. 枚举与数字是兼容的，但不同枚举不兼容
@@ -89,11 +91,25 @@
 11. 映射
     - 映射是根据旧类型创建新类型，一般会改变成员属性，核心是{[P in keyof T]:T[P]}，T[k]是成员类型，keyof T相当于string(|string)*
     - K extends keyof T映射是同态的，会copy属性，否则是不同态的，会生成新的成员变量，所有不会copy属性
+12. module
+    - module是含顶级import和export的文件，module之间用import和export关联
+    1. 内部module用namespace代替，但export时namespace没有意义，因为它们的作用重复了
+    1. export放在顶层，即无子结构
+    2. 减少export层次，比如类静态变量可用单独常量表示
+    3. 单独export用default
+    5. 多个export namespace Foo {不会合并
+    6. dts中的module：declare module "url"
+    7. compiler推导出的编译文件即使出现在exclude列表，仍然会参与编译
+13. namespace
+    - 通过相同namespace和/// <reference path="*.ts" />来打散同一个module
 12. Symbols
     - 唯一标识符，强大到可当类成员变量和方法，Symbol.hasInstance等内置笔法
 13. 合并
-    - 若没有成员冲突声明可以合并：namespace之间，interface之间，namespace和interface，class和namespace，class和interface，除此之外，namespace还可以声明为function声明变量，为enum提供扩展
-    
+    - 若没有成员冲突声明可以合并：namespace之间，interface之间，namespace和interface，class和namespace，class和interface
+    - namespace常用来为类提供静态变量，为function提供变量，为enum提供扩展
+
+14. tsconfig
+    1. 默认所有可见的@types包会在编译过程中被包含进来，如果指定了typeRoots则只包含typeRoots及以下的@types包，如果指定types则仅包含types的包，不包含子目录
 ???
     1. type, type, value, :, =
 ```typescript
